@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>楼道露出游戏</title>
+  <script src="https://cdn.tailwindcss.com?enable-production-mode"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #165DFF;
+      --secondary: #36CBCB;
+      --accent: #FF7D00;
+      --success: #00B42A;
+      --warning: #FF7D00;
+      --danger: #F53F3F;
+      --neutral-100: #F5F7FA;
+      --neutral-200: #E4E7ED;
+      --neutral-300: #C0C4CC;
+      --neutral-400: #909399;
+      --neutral-500: #606266;
+      --neutral-600: #303133;
+      --neutral-700: #1E1E1E;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff, #e6f7ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      margin: 0;
+      position: relative;
+      padding-bottom: 100px; /* 为底部按钮留出空间 */
+    }
+    
+    .game-card {
+      box-shadow: 0 15px 30px -5px rgba(22, 93, 255, 0.1), 0 10px 15px -5px rgba(22, 93, 255, 0.05);
+      transition: all 0.3s ease;
+      border-radius: 1.5rem;
+      background: white;
+      overflow: hidden;
+      max-width: 95%;
+      margin: 0 auto;
+    }
+    
+    .game-card:hover {
+      box-shadow: 0 20px 40px -5px rgba(22, 93, 255, 0.15), 0 15px 25px -5px rgba(22, 93, 255, 0.1);
+    }
+    
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0e4dcc;
+      transform: translateY(-2px);
+      box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-primary:disabled {
+      background-color: var(--neutral-300);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      border: 1px solid var(--neutral-300);
+      color: var(--neutral-700);
+      font-weight: 500;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--neutral-100);
+    }
+    
+    .input-focus:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.2);
+      border-color: var(--primary);
+    }
+    
+    @keyframes fallIn {
+      0% { transform: scale(0.8) translateY(-20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    
+    @keyframes buttonBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
+    @keyframes bounceEffect {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes equipmentHighlight {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 125, 0, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 125, 0, 0); }
+      100% { transform: scale(1); }
+    }
+    
+    .animate-fall-in {
+      animation: fallIn 0.5s ease-out forwards;
+    }
+    
+    .animate-button-bounce {
+      animation: buttonBounce 0.3s ease-out;
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-in forwards;
+    }
+    
+    .animate-bounce {
+      animation: bounceEffect 1s ease;
+    }
+    
+    .animate-pulse {
+      animation: pulse 1s infinite;
+    }
+    
+    .animate-equipment-highlight {
+      animation: equipmentHighlight 1.5s ease;
+    }
+    
+    .text-accent {
+      color: var(--accent);
+    }
+    
+    .text-secondary {
+      color: var(--secondary);
+    }
+    
+    .text-success {
+      color: var(--success);
+    }
+    
+    .text-warning {
+      color: var(--warning);
+    }
+    
+    .text-danger {
+      color: var(--danger);
+    }
+    
+    .text-neutral-500 {
+      color: var(--neutral-500);
+    }
+    
+    .text-neutral-700 {
+      color: var(--neutral-700);
+    }
+    
+    .fixed-center {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      z-index: 10;
+      animation: confetti 2s ease-in forwards;
+    }
+    
+    .floor-indicator {
+      display: inline-block;
+      min-width: 60px;
+      text-align: center;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background-color: #f0f7ff;
+      font-weight: 600;
+      margin: 0 5px;
+    }
+    
+    .event-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background-color: #e6f7ff;
+      color: var(--primary);
+      font-size: 0.85rem;
+      margin: 5px 0;
+      font-weight: 500;
+    }
+    
+    .bounce-info {
+      background-color: #fff7e6;
+      border-left: 3px solid var(--warning);
+      padding: 10px 15px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      font-size: 0.9rem;
+    }
+    
+    /* 装备系统样式 */
+    .equipment-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    
+    .equipment-item {
+      padding: 6px 12px;
+      border-radius: 20px;
+      background-color: #f0f7ff;
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .equipment-item.removed {
+      background-color: var(--neutral-200);
+      color: var(--neutral-500);
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    
+    .equipment-item.highlight {
+      animation: pulse 1s ease-in-out;
+      background-color: #fff7e6;
+      color: var(--warning);
+    }
+    
+    .equipment-icon {
+      font-size: 14px;
+    }
+    
+    /* 特殊选项模态框 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .special-modal {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      max-width: 90%;
+      width: 400px;
+      padding: 25px;
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    
+    .modal-overlay.active .special-modal {
+      transform: translateY(0);
+    }
+    
+    .special-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .special-option {
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: #f0f7ff;
+      border: 1px solid #d6e4ff;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .special-option:hover {
+      background: #d6e4ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(22, 93, 255, 0.1);
+    }
+    
+    .special-option i {
+      font-size: 20px;
+    }
+    
+    .special-option.option-a i {
+      color: var(--success);
+    }
+    
+    .special-option.option-b i {
+      color: var(--danger);
+    }
+    
+    .equipment-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .equipment-selector .equipment-item {
+      cursor: pointer;
+    }
+    
+    .equipment-selector .equipment-item:hover {
+      background-color: #d6e4ff;
+    }
+    
+    .zw-timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--danger);
+      text-align: center;
+      margin: 15px 0;
+    }
+    
+    .zw-button {
+      background-color: var(--danger);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    .zw-button:hover {
+      background-color: #d03050;
+      transform: scale(1.05);
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background-color: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--danger);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    
+    .floor-change-animation {
+      position: absolute;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--danger);
+      z-index: 10;
+      animation: fallAnimation 1s ease-out forwards;
+    }
+    
+    @keyframes fallAnimation {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(80px); opacity: 0; }
+    }
+    
+    /* 底部按钮容器 */
+    .bottom-button-container {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      padding: 0 20px;
+      z-index: 30;
+    }
+    
+    .bottom-button {
+      width: 100%;
+      max-width: 500px;
+      padding: 15px 20px;
+      font-size: 1.1rem;
+    }
+    
+    /* 游戏状态指示器 */
+    .game-status-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--success);
+    }
+    
+    .status-dot.inactive {
+      background-color: var(--neutral-300);
+    }
+    
+    /* 双倍事件样式 */
+    .double-event-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background-color: #fff7e6;
+      color: var(--warning);
+      font-size: 0.85rem;
+      margin: 5px 0;
+      font-weight: 500;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .double-event-info {
+      background-color: #f9f0ff;
+      border-left: 3px solid #722ed1;
+      padding: 10px 15px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      font-size: 0.9rem;
+    }
+    
+    /* 响应式调整 */
+    @media (max-height: 700px) {
+      body {
+        padding-top: 20px;
+        padding-bottom: 80px;
+      }
+      
+      .game-card {
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .equipment-item {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+      }
+      
+      .bottom-button {
+        padding: 12px 16px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 初始页面 -->
+  <div id="startPage" class="fixed-center w-full max-w-md p-6 md:p-8 game-card transition-all duration-500">
+    <div class="text-center mb-8">
+      <div class="mb-6">
+        <div class="inline-block p-3 bg-blue-50 rounded-full mb-4 animate-bounce">
+          <i class="fa fa-building text-blue-500 text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-neutral-700 mb-2">
+          楼道露出游戏
+        </h1>
+        <p class="text-neutral-500 mb-6">
+          是刺激的楼道露出挑战的说
+        </p>
+      </div>
+      
+      <!-- 楼层输入框 -->
+      <div class="mb-6">
+        <label for="startFloor" class="block text-sm font-medium text-neutral-700 mb-2">
+          开始楼层 <span class="text-accent">*</span>
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fa fa-building text-neutral-400"></i>
+          </div>
+          <input 
+            type="number" 
+            id="startFloor" 
+            class="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-lg input-focus transition-colors"
+            placeholder="请输入楼层数"
+            min="1"
+            required
+          >
+          <!-- 实时验证提示 -->
+          <div id="floorValidation" class="absolute right-3 bottom-0 text-xs text-neutral-500 mt-1 hidden">
+            <i class="fa fa-check text-success mr-1"></i> 有效输入
+          </div>
+        </div>
+        <p class="text-xs text-neutral-500 mt-1">请输入1或更大的整数</p>
+      </div>
+      
+      <button id="startGameBtn" class="btn-primary w-full" disabled>
+        <i class="fa fa-play mr-2"></i>
+        <span>开始游戏</span>
+      </button>
+      
+      <!-- 游戏说明 -->
+      <div class="mt-8 text-left bg-blue-50 p-4 rounded-xl">
+        <h3 class="font-bold text-blue-700 mb-2 flex items-center">
+          <i class="fa fa-info-circle mr-2"></i> 游戏规则
+        </h3>
+        <ul class="text-sm text-neutral-600 space-y-1">
+          <li>• 每次下降1-5层，有随机事件发生</li>
+          <li>• 如果下降到0层以下，会反弹为正数楼层</li>
+          <li>• 正好到达0层则游戏胜利</li>
+          <li>• 每次下降会随机选择一件装备脱下</li>
+          <li>• 当所有装备已脱下，随机事件效果×2</li>
+          <li>•两套衣服(鞋子，袜子，裤子，内裤，上衣，外套）准备阶段：将一套衣服放在塑料袋中，连同家门钥匙一起放在一楼。 </li>
+           <li>•游戏结束后穿备用衣服坐电梯回各楼层取回衣服</li>
+         </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 游戏主页面 -->
+  <div id="gamePage" class="w-full max-w-md mx-auto hidden">
+    <!-- 顶部状态指示器 -->
+    <div class="game-status-indicator">
+      <div class="status-dot" id="gameStatusDot"></div>
+      <span>游戏中</span>
+    </div>
+    
+    <!-- 头部状态 -->
+    <div class="text-center mb-4 mt-6 animate-fade-in">
+      <h1 class="text-2xl font-bold text-neutral-700 mb-1">
+        楼层下降中
+      </h1>
+      <p id="currentFloor" class="text-sm text-neutral-500">
+        当前楼层: <span class="floor-indicator text-accent">--</span>
+      </p>
+    </div>
+    
+    <!-- 装备状态 -->
+    <div id="equipmentStatus" class="equipment-container">
+      <div class="equipment-item" data-equipment="pants">
+        <i class="fa fa-male equipment-icon"></i> 裤子
+      </div>
+      <div class="equipment-item" data-equipment="underwear">
+        <i class="fa fa-venus equipment-icon"></i> 内裤
+      </div>
+      <div class="equipment-item" data-equipment="shoes">
+        <i class="fa fa-shopping-bag equipment-icon"></i> 鞋
+      </div>
+      <div class="equipment-item" data-equipment="shirt">
+        <i class="fa fa-black-tie equipment-icon"></i> 上衣
+      </div>
+      <div class="equipment-item" data-equipment="coat">
+        <i class="fa fa-snowflake-o equipment-icon"></i> 外套
+      </div>
+      <div class="equipment-item" data-equipment="socks">
+        <i class="fa fa-socks equipment-icon"></i> 袜子
+      </div>
+    </div>
+    
+    <!-- 主卡片 -->
+    <div class="bg-white rounded-2xl game-card p-6 md:p-8 mb-6">
+      <!-- 中心显示区域 -->
+      <div id="centerDisplay" class="flex flex-col items-center justify-center min-h-[250px]">
+        <!-- 初始提示 -->
+        <div class="text-center text-neutral-500">
+          <i class="fa fa-info-circle text-2xl mb-2 text-primary"></i>
+          <p>点击下方按钮开始下降楼层</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部按钮区域 -->
+  <div class="bottom-button-container">
+    <button id="generateBtn" class="btn-primary bottom-button animate-button-bounce" disabled>
+      <i class="fa fa-random mr-2"></i>
+      <span>下降楼层 (1-5层)</span>
+    </button>
+  </div>
+
+  <!-- 特殊选项模态框 -->
+  <div id="specialOptionModal" class="modal-overlay">
+    <div class="special-modal">
+      <h3 class="text-xl font-bold text-neutral-700 mb-2">
+        <i class="fa fa-exclamation-triangle text-warning mr-2"></i> 特殊选项
+      </h3>
+      <p id="specialOptionMessage" class="text-neutral-600">
+        您再次选择了同一件装备，请选择操作：
+      </p>
+      
+      <div id="specialOptions" class="special-options">
+        <div class="special-option option-a" data-option="a">
+          <i class="fa fa-random"></i>
+          <div>
+            <h4 class="font-semibold">选项 A</h4>
+            <p class="text-sm">随机脱下另外两件装备</p>
+          </div>
+        </div>
+        <div class="special-option option-b" data-option="b">
+          <i class="fa fa-hand-pointer-o"></i>
+          <div>
+            <h4 class="font-semibold">选项 B</h4>
+            <p class="text-sm">选择一件装备脱下（ZW30秒）</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="optionBContent" class="hidden">
+        <h4 class="font-semibold text-neutral-700 mt-4 mb-3">选择要脱下的装备：</h4>
+        <div id="equipmentSelector" class="equipment-selector"></div>
+      </div>
+      
+      <div id="zwTimerContent" class="hidden">
+        <div class="zw-timer">
+          ZW倒计时: <span id="zwTimerValue">30</span>秒
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <button id="skipZwBtn" class="zw-button">跳过等待</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 复制成功提示 -->
+  <div id="copyToast" class="fixed bottom-4 right-4 bg-neutral-700 text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center">
+    <i class="fa fa-check mr-2"></i>
+    <span>已复制到剪贴板</span>
+  </div>
+
+  <script>
+    // 事件映射表
+    const eventMap = {
+      'A': '原地自慰30秒',
+      'B': '楼梯间门口闭眼M蹲15秒',
+      'C': '放尿3秒',
+      'D': '寸止一次',
+      'E': '拍打屁股10下（大声）',
+      'F': '下次移动改为爬行（注意安全）',
+      'G': '背对电梯/住户门掰开屁股15秒'
+    };
+    
+    // 装备映射表
+    const equipmentMap = {
+      'pants': { name: '裤子', icon: 'fa-male' },
+      'underwear': { name: '内裤', icon: 'fa-venus' },
+      'shoes': { name: '鞋', icon: 'fa-shopping-bag' },
+      'shirt': { name: '上衣', icon: 'fa-black-tie' },
+      'coat': { name: '外套', icon: 'fa-snowflake-o' },
+      'socks': { name: '袜子', icon: 'fa-socks' }
+    };
+    
+    // 获取DOM元素
+    const startPage = document.getElementById('startPage');
+    const gamePage = document.getElementById('gamePage');
+    const startFloorInput = document.getElementById('startFloor');
+    const startGameBtn = document.getElementById('startGameBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const centerDisplay = document.getElementById('centerDisplay');
+    const currentFloor = document.getElementById('currentFloor');
+    const copyToast = document.getElementById('copyToast');
+    const floorValidation = document.getElementById('floorValidation');
+    const equipmentStatus = document.getElementById('equipmentStatus');
+    const specialOptionModal = document.getElementById('specialOptionModal');
+    const specialOptionMessage = document.getElementById('specialOptionMessage');
+    const specialOptions = document.getElementById('specialOptions');
+    const optionBContent = document.getElementById('optionBContent');
+    const equipmentSelector = document.getElementById('equipmentSelector');
+    const zwTimerContent = document.getElementById('zwTimerContent');
+    const zwTimerValue = document.getElementById('zwTimerValue');
+    const progressFill = document.getElementById('progressFill');
+    const skipZwBtn = document.getElementById('skipZwBtn');
+    const gameStatusDot = document.getElementById('gameStatusDot');
+    
+    // 游戏状态
+    let gameState = {
+      isStarted: false,
+      startFloor: 0,
+      currentFloor: 0,
+      totalDecrease: 0,
+      isGameOver: false,
+      equipment: {
+        pants: false,   // false表示未脱下
+        underwear: false,
+        shoes: false,
+        shirt: false,
+        coat: false,
+        socks: false
+      },
+      equipmentCount: {
+        pants: 0,
+        underwear: 0,
+        shoes: 0,
+        shirt: 0,
+        coat: 0,
+        socks: 0
+      },
+      currentSpecialEquipment: null,
+      zwTimer: null
+    };
+    
+    // 设置输入验证
+    function setupInputValidation() {
+      startFloorInput.addEventListener('input', validateFloorInput);
+      startFloorInput.addEventListener('blur', validateFloorInput);
+    }
+    
+    // 验证楼层输入
+    function validateFloorInput() {
+      const value = startFloorInput.value.trim();
+      const isValid = !isNaN(value) && parseInt(value) >= 1;
+      
+      floorValidation.classList.toggle('hidden', !isValid);
+      startGameBtn.disabled = !isValid;
+      
+      if (isValid) {
+        floorValidation.innerHTML = `<i class="fa fa-check text-success mr-1"></i> 有效输入`;
+      } else if (value) {
+        floorValidation.innerHTML = `<i class="fa fa-times text-danger mr-1"></i> 无效楼层`;
+        floorValidation.classList.remove('hidden');
+      } else {
+        floorValidation.classList.add('hidden');
+      }
+    }
+    
+    // 初始化页面
+    document.addEventListener('DOMContentLoaded', () => {
+      setupInputValidation();
+      setupEventListeners();
+      generateBtn.disabled = true;
+      
+      // 设置示例值便于测试
+      startFloorInput.value = 10;
+      validateFloorInput();
+    });
+    
+    // 设置事件监听
+    function setupEventListeners() {
+      startGameBtn.addEventListener('click', switchToGamePage);
+      generateBtn.addEventListener('click', renderCurrentChange);
+      centerDisplay.addEventListener('click', handleCenterClick);
+      
+      // 特殊选项事件
+      document.querySelectorAll('.special-option').forEach(option => {
+        option.addEventListener('click', handleSpecialOption);
+      });
+      
+      // 跳过ZW按钮
+      skipZwBtn.addEventListener('click', skipZwTimer);
+    }
+    
+    // 生成1-5的随机整数
+    function generateRandomInteger() {
+      return Math.floor(Math.random() * 5) + 1;
+    }
+    
+    // 生成A-G的随机事件字母
+    function generateRandomEvent() {
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+      return letters[Math.floor(Math.random() * letters.length)];
+    }
+    
+    // 随机选择一件装备
+    function selectRandomEquipment() {
+      const equipmentKeys = Object.keys(gameState.equipment);
+      const availableEquipment = equipmentKeys.filter(key => !gameState.equipment[key]);
+      
+      // 如果没有可脱装备，返回null
+      if (availableEquipment.length === 0) return null;
+      
+      const randomIndex = Math.floor(Math.random() * availableEquipment.length);
+      return availableEquipment[randomIndex];
+    }
+    
+    // 页面切换动画
+    function switchToGamePage() {
+      const startFloor = parseInt(startFloorInput.value);
+      
+      if (isNaN(startFloor) || startFloor < 1) {
+        alert('请输入有效的开始楼层（1或更大的整数）');
+        return;
+      }
+      
+      // 重置游戏状态
+      gameState.isStarted = true;
+      gameState.startFloor = startFloor;
+      gameState.currentFloor = startFloor;
+      gameState.totalDecrease = 0;
+      gameState.isGameOver = false;
+      gameState.equipment = {
+        pants: false,
+        underwear: false,
+        shoes: false,
+        shirt: false,
+        coat: false,
+        socks: false
+      };
+      gameState.equipmentCount = {
+        pants: 0,
+        underwear: 0,
+        shoes: 0,
+        shirt: 0,
+        coat: 0,
+        socks: 0
+      };
+      
+      // 更新显示
+      updateCurrentFloorDisplay();
+      updateEquipmentDisplay();
+      generateBtn.disabled = false;
+      
+      // 动画切换页面
+      startPage.style.opacity = '0';
+      startPage.style.transform = 'translate(-50%, calc(-50% + 40px))';
+      
+      setTimeout(() => {
+        startPage.classList.add('hidden');
+        gamePage.classList.remove('hidden');
+        gamePage.style.opacity = '1';
+      }, 500);
+    }
+    
+    // 渲染当前下降值和随机事件
+    function renderCurrentChange() {
+      if (!gameState.isStarted || gameState.isGameOver) return;
+      
+      const change = generateRandomInteger();
+      let eventLetter = generateRandomEvent();
+      let eventText = eventMap[eventLetter];
+      let doubleEvent = false;
+      
+      // 处理装备事件
+      const equipmentEvent = handleEquipmentEvent();
+      
+      // 如果没有装备可脱，则触发双倍事件
+      if (equipmentEvent && equipmentEvent.type === 'no-equipment') {
+        doubleEvent = true;
+        // 再生成一个随机事件
+        const secondEventLetter = generateRandomEvent();
+        const secondEventText = eventMap[secondEventLetter];
+        
+        // 合并事件显示
+        eventText = `${eventText} + ${secondEventText}`;
+      }
+      
+      // 计算楼层变化
+      let newFloor = gameState.currentFloor - change;
+      let bounced = false;
+      let downSteps = change;
+      let upSteps = 0;
+      let pathDescription = `下降${change}层`;
+      
+      // 检查是否需要反弹（确保楼层不为负）
+      if (newFloor < 0) {
+        bounced = true;
+        downSteps = gameState.currentFloor;
+        upSteps = Math.abs(newFloor);
+        newFloor = upSteps;
+        pathDescription = `下降${downSteps}层 → 上升${upSteps}层`;
+      }
+      
+      // 更新游戏状态
+      gameState.totalDecrease += change;
+      gameState.currentFloor = newFloor;
+      
+      // 检查游戏是否成功
+      if (newFloor === 0) {
+        gameSuccess();
+        return;
+      }
+      
+      // 更新显示
+      updateCenterDisplay(change, eventText, bounced, downSteps, upSteps, equipmentEvent, doubleEvent);
+      updateCurrentFloorDisplay();
+      
+      // 添加楼层变化动画
+      addFloorChangeAnimation(change, bounced);
+      
+      // 按钮点击效果
+      generateBtn.classList.add('scale-95');
+      setTimeout(() => {
+        generateBtn.classList.remove('scale-95');
+      }, 200);
+    }
+    
+    // 添加楼层变化动画
+    function addFloorChangeAnimation(change, bounced) {
+      const animationEl = document.createElement('div');
+      animationEl.className = 'floor-change-animation';
+      animationEl.textContent = `-${change}`;
+      centerDisplay.appendChild(animationEl);
+      
+      setTimeout(() => {
+        animationEl.remove();
+      }, 1000);
+    }
+    
+    // 处理装备事件
+    function handleEquipmentEvent() {
+      const selectedEquipment = selectRandomEquipment();
+      
+      // 如果没有可脱装备
+      if (!selectedEquipment) {
+        return { 
+          type: 'no-equipment', 
+          message: '所有装备已脱下，触发双倍随机事件！' 
+        };
+      }
+      
+      gameState.equipmentCount[selectedEquipment]++;
+      
+      // 首次选择该装备
+      if (gameState.equipmentCount[selectedEquipment] === 1) {
+        gameState.equipment[selectedEquipment] = true;
+        updateEquipmentDisplay();
+        highlightEquipment(selectedEquipment);
+        
+        return {
+          type: 'remove',
+          equipment: selectedEquipment,
+          message: `脱下${equipmentMap[selectedEquipment].name}`
+        };
+      }
+      
+      // 重复选择装备 - 触发特殊选项
+      gameState.currentSpecialEquipment = selectedEquipment;
+      showSpecialOptionModal(selectedEquipment);
+      
+      return {
+        type: 'special',
+        equipment: selectedEquipment,
+        message: `再次选择${equipmentMap[selectedEquipment].name}，触发特殊选项`
+      };
+    }
+    
+    // 显示特殊选项模态框
+    function showSpecialOptionModal(equipment) {
+      specialOptionMessage.innerHTML = `您再次选择了<span class="font-bold text-warning">${equipmentMap[equipment].name}</span>，请选择操作：`;
+      specialOptions.classList.remove('hidden');
+      optionBContent.classList.add('hidden');
+      zwTimerContent.classList.add('hidden');
+      specialOptionModal.classList.add('active');
+      
+      // 禁用下降按钮
+      generateBtn.disabled = true;
+    }
+    
+    // 处理特殊选项
+    function handleSpecialOption(e) {
+      const option = e.currentTarget.dataset.option;
+      const equipment = gameState.currentSpecialEquipment;
+      
+      if (option === 'a') {
+        // 选项A：随机脱下另外两件装备
+        removeRandomTwoEquipment();
+        specialOptionModal.classList.remove('active');
+        generateBtn.disabled = false;
+      } else if (option === 'b') {
+        // 选项B：显示装备选择器
+        specialOptions.classList.add('hidden');
+        showEquipmentSelector();
+      }
+    }
+    
+    // 随机脱下另外两件装备
+    function removeRandomTwoEquipment() {
+      const availableEquipment = Object.keys(gameState.equipment)
+        .filter(key => !gameState.equipment[key] && key !== gameState.currentSpecialEquipment);
+      
+      // 如果可用装备不足，脱下所有可用装备
+      const toRemove = availableEquipment.slice(0, 2);
+      
+      toRemove.forEach(equipment => {
+        gameState.equipment[equipment] = true;
+      });
+      
+      updateEquipmentDisplay();
+    }
+    
+    // 显示装备选择器
+    function showEquipmentSelector() {
+      equipmentSelector.innerHTML = '';
+      const availableEquipment = Object.keys(gameState.equipment)
+        .filter(key => !gameState.equipment[key] && key !== gameState.currentSpecialEquipment);
+      
+      if (availableEquipment.length === 0) {
+        optionBContent.innerHTML = '<p class="text-neutral-500 text-center py-4">没有可脱下的装备</p>';
+        optionBContent.classList.remove('hidden');
+        return;
+      }
+      
+      availableEquipment.forEach(equipment => {
+        const item = document.createElement('div');
+        item.className = 'equipment-item';
+        item.dataset.equipment = equipment;
+        item.innerHTML = `
+          <i class="fa ${equipmentMap[equipment].icon} equipment-icon"></i> 
+          ${equipmentMap[equipment].name}
+        `;
+        item.addEventListener('click', () => selectEquipmentToRemove(equipment));
+        equipmentSelector.appendChild(item);
+      });
+      
+      optionBContent.classList.remove('hidden');
+    }
+    
+    // 选择要脱下的装备
+    function selectEquipmentToRemove(equipment) {
+      gameState.equipment[equipment] = true;
+      
+      updateEquipmentDisplay();
+      
+      // 显示ZW计时器
+      optionBContent.classList.add('hidden');
+      showZwTimer();
+    }
+    
+    // 显示ZW计时器
+    function showZwTimer() {
+      zwTimerContent.classList.remove('hidden');
+      let seconds = 30;
+      zwTimerValue.textContent = seconds;
+      
+      // 进度条重置
+      progressFill.style.width = '0%';
+      
+      // 开始计时
+      gameState.zwTimer = setInterval(() => {
+        seconds--;
+        zwTimerValue.textContent = seconds;
+        progressFill.style.width = `${(30 - seconds) * 100 / 30}%`;
+        
+        if (seconds <= 0) {
+          finishZwTimer();
+        }
+      }, 1000);
+    }
+    
+    // 完成ZW计时
+    function finishZwTimer() {
+      clearInterval(gameState.zwTimer);
+      specialOptionModal.classList.remove('active');
+      generateBtn.disabled = false;
+    }
+    
+    // 跳过ZW计时
+    function skipZwTimer() {
+      clearInterval(gameState.zwTimer);
+      finishZwTimer();
+    }
+    
+    // 游戏成功处理
+    function gameSuccess() {
+      gameState.isGameOver = true;
+      generateBtn.disabled = true;
+      
+      centerDisplay.innerHTML = '';
+      centerDisplay.classList.add('animate-fall-in');
+      
+      const successEl = document.createElement('div');
+      successEl.className = 'text-center';
+      
+      const iconEl = document.createElement('i');
+      iconEl.className = 'fa fa-trophy text-6xl text-accent mb-4 animate-bounce';
+      
+      const titleEl = document.createElement('h2');
+      titleEl.className = 'text-3xl font-bold text-success mb-2';
+      titleEl.textContent = '挑战成功！';
+      
+      const descEl = document.createElement('p');
+      descEl.className = 'text-neutral-600 mb-4';
+      descEl.textContent = `您成功从 ${gameState.startFloor} 层下降到 0 层`;
+      
+      const statsEl = document.createElement('p');
+      statsEl.className = 'text-sm text-neutral-500';
+      statsEl.innerHTML = `共下降 <span class="font-bold text-accent">${gameState.totalDecrease}</span> 层`;
+      
+      successEl.appendChild(iconEl);
+      successEl.appendChild(titleEl);
+      successEl.appendChild(descEl);
+      successEl.appendChild(statsEl);
+      
+      centerDisplay.appendChild(successEl);
+      createConfetti();
+      
+      // 更新游戏状态指示器
+      gameStatusDot.style.backgroundColor = 'var(--success)';
+    }
+    
+    // 创建彩花特效
+    function createConfetti() {
+      const colors = ['#165DFF', '#36CBCB', '#FF7D00', '#00B42A', '#F53F3F'];
+      const container = document.body;
+      
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = `${Math.random() * 100}vw`;
+        confetti.style.top = '-10px';
+        confetti.style.width = `${Math.random() * 10 + 5}px`;
+        confetti.style.height = confetti.style.width;
+        confetti.style.animationDelay = `${Math.random() * 2}s`;
+        container.appendChild(confetti);
+        
+        setTimeout(() => {
+          confetti.remove();
+        }, 3000);
+      }
+    }
+    
+    // 更新中心显示区域
+    function updateCenterDisplay(change, eventText, bounced, downSteps, upSteps, equipmentEvent, doubleEvent) {
+      centerDisplay.innerHTML = '';
+      centerDisplay.classList.add('animate-fall-in');
+      
+      // 事件显示
+      const eventEl = document.createElement('div');
+      eventEl.className = 'event-badge mb-3';
+      eventEl.textContent = eventText;
+      centerDisplay.appendChild(eventEl);
+      
+      // 双倍事件显示
+      if (doubleEvent) {
+        const doubleEventEl = document.createElement('div');
+        doubleEventEl.className = 'double-event-badge mb-3';
+        doubleEventEl.textContent = '双倍事件效果！';
+        centerDisplay.appendChild(doubleEventEl);
+        
+        const doubleInfo = document.createElement('div');
+        doubleInfo.className = 'double-event-info';
+        doubleInfo.innerHTML = `<i class="fa fa-bolt text-purple-500 mr-1"></i> 所有装备已脱下，触发双倍随机事件效果`;
+        centerDisplay.appendChild(doubleInfo);
+      }
+      
+      // 下降值显示
+      const floorChangeEl = document.createElement('div');
+      floorChangeEl.className = 'text-3xl font-bold text-accent mb-4 text-center';
+      floorChangeEl.textContent = `下降${downSteps}层${bounced ? ` → 上升${upSteps}层` : ''}`;
+      centerDisplay.appendChild(floorChangeEl);
+      
+      // 反弹提示
+      if (bounced) {
+        const bounceInfo = document.createElement('div');
+        bounceInfo.className = 'bounce-info';
+        bounceInfo.innerHTML = `<i class="fa fa-arrow-circle-down text-warning mr-1"></i> 下降超过0层，反弹为${upSteps}层`;
+        centerDisplay.appendChild(bounceInfo);
+      }
+      
+      // 装备事件显示
+      if (equipmentEvent) {
+        const equipmentInfo = document.createElement('div');
+        equipmentInfo.className = 'mt-4 p-3 bg-blue-50 rounded-lg text-center';
+        
+        const icon = document.createElement('i');
+        icon.className = 'fa fa-tshirt text-blue-500 mr-2';
+        
+        const text = document.createElement('span');
+        text.textContent = equipmentEvent.message;
+        text.className = 'text-blue-700 font-medium';
+        
+        equipmentInfo.appendChild(icon);
+        equipmentInfo.appendChild(text);
+        centerDisplay.appendChild(equipmentInfo);
+      }
+      
+      // 当前楼层显示
+      const currentFloorEl = document.createElement('div');
+      currentFloorEl.className = 'text-sm text-neutral-500 text-center mt-4';
+      currentFloorEl.innerHTML = `当前楼层: <span class="floor-indicator text-accent">${gameState.currentFloor}</span>`;
+      centerDisplay.appendChild(currentFloorEl);
+      
+      setTimeout(() => {
+        centerDisplay.classList.remove('animate-fall-in');
+      }, 500);
+    }
+    
+    // 更新装备显示
+    function updateEquipmentDisplay() {
+      const equipmentItems = equipmentStatus.querySelectorAll('.equipment-item');
+      
+      equipmentItems.forEach(item => {
+        const equipment = item.dataset.equipment;
+        
+        if (gameState.equipment[equipment]) {
+          item.classList.add('removed');
+        } else {
+          item.classList.remove('removed');
+        }
+        
+        // 更新图标和文本
+        item.innerHTML = `
+          <i class="fa ${equipmentMap[equipment].icon} equipment-icon"></i> 
+          ${equipmentMap[equipment].name}
+        `;
+      });
+    }
+    
+    // 高亮装备
+    function highlightEquipment(equipment) {
+      const item = document.querySelector(`.equipment-item[data-equipment="${equipment}"]`);
+      if (!item) return;
+      
+      item.classList.add('highlight');
+      item.classList.add('animate-equipment-highlight');
+      
+      setTimeout(() => {
+        item.classList.remove('highlight');
+        item.classList.remove('animate-equipment-highlight');
+      }, 2000);
+    }
+    
+    // 更新当前楼层显示
+    function updateCurrentFloorDisplay() {
+      currentFloor.innerHTML = `当前楼层: <span class="floor-indicator text-accent">${gameState.currentFloor}</span>`;
+    }
+    
+    // 复制数据到剪贴板
+    function copyToClipboard(text, toastMsg = '已复制到剪贴板') {
+      navigator.clipboard.writeText(text).then(() => {
+        copyToast.querySelector('span').textContent = toastMsg;
+        copyToast.style.transform = 'translateY(0)';
+        copyToast.style.opacity = '1';
+        
+        setTimeout(() => {
+          copyToast.style.transform = 'translateY(80px)';
+          copyToast.style.opacity = '0';
+        }, 3000);
+      }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动复制');
+      });
+    }
+    
+    // 处理中心区域点击
+    function handleCenterClick(e) {
+      if (gameState.currentFloor !== undefined) {
+        copyToClipboard(`当前楼层: ${gameState.currentFloor}`);
+      }
+    }
+    
+    // 重置游戏状态
+    function resetGameState() {
+      if (!confirm('确定要重新开始游戏吗？当前进度将被清空')) {
+        return;
+      }
+      
+      // 清除ZW计时器
+      if (gameState.zwTimer) {
+        clearInterval(gameState.zwTimer);
+      }
+      
+      gamePage.style.opacity = '0';
+      
+      setTimeout(() => {
+        gamePage.classList.add('hidden');
+        startPage.classList.remove('hidden');
+        startPage.style.opacity = '1';
+        startPage.style.transform = 'translate(-50%, -50%)';
+        
+        // 重置游戏状态
+        gameState = {
+          isStarted: false,
+          startFloor: 0,
+          currentFloor: 0,
+          totalDecrease: 0,
+          isGameOver: false,
+          equipment: {
+            pants: false,
+            underwear: false,
+            shoes: false,
+            shirt: false,
+            coat: false,
+            socks: false
+          },
+          equipmentCount: {
+            pants: 0,
+            underwear: 0,
+            shoes: 0,
+            shirt: 0,
+            coat: 0,
+            socks: 0
+          },
+          currentSpecialEquipment: null,
+          zwTimer: null
+        };
+        
+        // 重置UI
+        startFloorInput.value = '';
+        validateFloorInput();
+        generateBtn.disabled = true;
+        
+        // 关闭特殊选项模态框
+        specialOptionModal.classList.remove('active');
+      }, 500);
+    }
+  </script>
+</body>
+</html>
